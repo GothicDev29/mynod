@@ -85,7 +85,7 @@ git push origin feature/mi-nueva-feature
 | Persona | Rol |
 |---|---|
 | **Julio** | Co-fundador / Desarrollo |
-| **Gothic** | Co-fundador / Desarrollo |
+| **Gothic4** | Co-fundador / Desarrollo |
 
 ---
 
