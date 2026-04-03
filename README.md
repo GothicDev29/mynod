@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyNod — Fast polls. Real answers.
 
-## Getting Started
+Plataforma de encuestas en tiempo real para equipos, comunidades y eventos. Crea una encuesta en segundos, compártela con un link y ve los resultados actualizarse en vivo.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+| Tecnología | Uso |
+|---|---|
+| **Next.js 15** | Framework principal con App Router |
+| **TypeScript** | Tipado estático en todo el proyecto |
+| **Tailwind CSS** | Estilos utilitarios |
+| **PostgreSQL** | Base de datos principal |
+| **Redis** | Caché y pub/sub para tiempo real |
+| **Dokploy** | Despliegue y gestión de infraestructura |
+
+---
+
+## Estructura del Proyecto
+
+```
+mynod/
+├── app/          # Rutas, páginas y layouts (App Router de Next.js)
+├── components/   # Componentes React reutilizables
+├── lib/          # Utilidades, clientes de BD, helpers
+├── types/        # Definiciones de tipos TypeScript compartidos
+└── public/       # Archivos estáticos (imágenes, íconos, fuentes)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Requisitos Previos
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Node.js** 18 o superior
+- **npm** 9 o superior
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Desarrollo Local
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/Juliuuslm/mynod.git
+cd mynod
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 2. Instalar dependencias
+npm install
 
-## Deploy on Vercel
+# 3. Configurar variables de entorno
+cp .env.example .env.local
+# Edita .env.local con tus credenciales locales
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 4. Iniciar el servidor de desarrollo
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+La app estará disponible en [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Flujo de Git
+
+```
+main        → Producción. Solo recibe merges desde develop (pull requests).
+develop     → Rama de integración. Todo el trabajo se une aquí antes de ir a main.
+feature/*   → Ramas de trabajo. Una por feature o tarea.
+```
+
+### Ejemplo de trabajo diario
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/mi-nueva-feature
+# ... trabajas ...
+git push origin feature/mi-nueva-feature
+# Abre un Pull Request hacia develop en GitHub
+```
+
+---
+
+## Equipo
+
+| Persona | Rol |
+|---|---|
+| **Julio** | Co-fundador / Desarrollo |
+| **Gothic** | Co-fundador / Desarrollo |
+
+---
+
+## Cómo Contribuir
+
+1. Haz fork del repositorio
+2. Crea una rama desde `develop`: `git checkout -b feature/tu-feature`
+3. Haz tus cambios y commitea con mensajes claros
+4. Abre un Pull Request hacia `develop`
+5. Espera revisión antes del merge
+
+---
+
+## Licencia
+
+MIT © 2026 MyNod
