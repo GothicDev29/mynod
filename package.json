@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
+    "ioredis": "^5.10.1",
     "next": "15.5.14",
     "pg": "^8.20.0",
     "react": "19.1.0",
