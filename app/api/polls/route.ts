@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { polls, options } from "@/lib/schema";
@@ -75,4 +76,18 @@ export async function POST(req: NextRequest) {
     },
     { status: 201 }
   );
+}
+
+export async function GET() {
+  const publicPolls = await db
+    .select({
+      id: polls.id,
+      question: polls.question,
+      creatorId: polls.creatorId,
+      createdAt: polls.createdAt,
+    })
+    .from(polls)
+    .where(eq(polls.isPublic, true));
+
+  return NextResponse.json(publicPolls);
 }

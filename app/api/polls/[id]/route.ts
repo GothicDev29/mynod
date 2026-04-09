@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { redis } from "@/lib/redis";
-import { polls, options } from "@/lib/schema";
+import { NextRequest, NextResponse } from 'next/server';
+import { eq } from 'drizzle-orm';
+import { db } from '@/lib/db';
+import { redis } from '@/lib/redis';
+import { polls, options } from '@/lib/schema';
 
 export async function GET(
   req: NextRequest,
@@ -11,24 +10,21 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  // 1. Obtener el poll de la BD
+  // 1. Obtener el poll
   const [poll] = await db.select().from(polls).where(eq(polls.id, id));
-
   if (!poll) {
-    return NextResponse.json({ error: "Poll no encontrado" }, { status: 404 });
+    return NextResponse.json({ error: 'Poll no encontrado' }, { status: 404 });
   }
 
   // 2. Validar acceso si el poll es privado
   if (!poll.isPublic) {
-    const password = req.nextUrl.searchParams.get("password");
-
-    if (!password) {
-      return NextResponse.json({ error: "Este poll es privado" }, { status: 400 });
+    const sessionToken = req.cookies.get('token')?.value;
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 });
     }
-
-    const passwordMatch = await bcrypt.compare(password, poll.passwordHash!);
-    if (!passwordMatch) {
-      return NextResponse.json({ error: "Contraseña incorrecta" }, { status: 401 });
+    const hasAccess = await redis.get(`pollAccess:${id}:${sessionToken}`);
+    if (!hasAccess) {
+      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 });
     }
   }
 
@@ -49,7 +45,6 @@ export async function GET(
 
   const totalVotes = optionsWithVotes.reduce((sum, o) => sum + o.votes, 0);
 
-  // 5. Responder 200
   return NextResponse.json({
     id: poll.id,
     question: poll.question,
