@@ -19,6 +19,8 @@ export default function CreatePoll() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [createdPollId, setCreatedPollId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     getToken().then((t) => {
@@ -38,6 +40,23 @@ export default function CreatePoll() {
   const updateOption = useCallback((index: number, value: string) => {
     setOptions((prev) => prev.map((opt, i) => (i === index ? value : opt)));
   }, []);
+
+  const handleCopyLink = async () => {
+    if (!createdPollId) return;
+    const url = `${window.location.origin}/poll/${createdPollId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleGoToPoll = () => {
+    if (!createdPollId) return;
+    router.push(`/poll/${createdPollId}`);
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -77,7 +96,7 @@ export default function CreatePoll() {
 
       if (res.status === 201) {
         const data = await res.json();
-        router.push(`/poll/${data.id}`);
+        setCreatedPollId(data.id);
       } else {
         const data = await res.json();
         setError(data.error ?? 'Error al crear la encuesta');
@@ -87,6 +106,45 @@ export default function CreatePoll() {
     } finally {
       setLoading(false);
     }
+  }
+
+  // Pantalla de confirmación si la encuesta fue creada
+  if (createdPollId) {
+    const pollUrl = `${window.location.origin}/poll/${createdPollId}`;
+    return (
+      <main className="min-h-screen bg-[#0f1117] flex items-center justify-center px-4">
+        <div className="w-full max-w-lg flex flex-col gap-6 text-center">
+          <div className="text-5xl">✨</div>
+          <h1 className="text-white text-2xl font-bold">¡Encuesta creada!</h1>
+
+          <p className="text-gray-400 text-sm">
+            Comparte este link con otros para que puedan participar:
+          </p>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={pollUrl}
+              readOnly
+              className="flex-1 rounded-lg px-4 py-3 bg-[#1c1f26] text-gray-300 text-sm font-mono outline-none"
+            />
+            <button
+              onClick={handleCopyLink}
+              className="px-4 py-3 rounded-lg bg-[#4f8ef7] text-white font-semibold hover:bg-[#3a7de0] transition-colors"
+            >
+              {copied ? '✓ Copiado' : 'Copiar'}
+            </button>
+          </div>
+
+          <button
+            onClick={handleGoToPoll}
+            className="rounded-lg px-4 py-3 bg-[#4f8ef7] text-white font-semibold hover:bg-[#3a7de0] transition-colors"
+          >
+            Ir a la encuesta
+          </button>
+        </div>
+      </main>
+    );
   }
 
   return (

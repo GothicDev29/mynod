@@ -25,8 +25,11 @@ export default function Dashboard() {
       });
 
     fetch('/api/polls')
-      .then((res) => res.json())
-      .then(setPublicPolls);
+      .then((res) => (res.ok ? res.json() : Promise.reject('Failed to fetch polls')))
+      .then(setPublicPolls)
+      .catch(() => {
+        // Silencioso - mantiene array vacío
+      });
   }, [router]);
 
   function handlePrivateEnter() {
