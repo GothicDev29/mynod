@@ -41,14 +41,11 @@ export async function POST(
     return NextResponse.json({ error: "Opción inválida" }, { status: 400 });
   }
 
-  // 3. Validar contraseña si el poll es privado
+  // 3. Validar acceso si el poll es privado
   if (!poll.isPublic) {
-    if (!password) {
-      return NextResponse.json({ error: "Este poll es privado" }, { status: 400 });
-    }
-    const passwordMatch = await bcrypt.compare(password, poll.passwordHash!);
-    if (!passwordMatch) {
-      return NextResponse.json({ error: "Contraseña incorrecta" }, { status: 401 });
+    const hasAccess = await redis.get(`pollAccess:${pollId}:${sessionToken}`);
+    if (!hasAccess) {
+      return NextResponse.json({ error: "No tienes acceso a este poll privado" }, { status: 403 });
     }
   }
 
