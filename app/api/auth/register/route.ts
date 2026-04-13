@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { redis } from '@/lib/redis';
+import { getRedis } from '@/lib/redis';
 
 export async function POST(req: NextRequest) {
   let body: { name: string };
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
   const token = crypto.randomUUID();
+  const redis = getRedis();
   await redis.set(`session:${token}`, name.trim(), 'EX', 86400);
 
   const res = NextResponse.json({ token, userId: name.trim() }, { status: 201 });

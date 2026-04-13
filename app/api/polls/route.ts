@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 import { polls, options } from "@/lib/schema";
 
 export async function POST(req: NextRequest) {
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
     const sessionToken = authHeader.slice(7);
 
     // 2. Verificar que el token existe en Redis
+    const redis = getRedis();
     const sessionData = await redis.get(`session:${sessionToken}`);
     if (!sessionData) {
       return NextResponse.json({ error: "Invalid or expired session" }, { status: 401 });

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { getRedis } from '@/lib/redis';
 import { polls, options } from '@/lib/schema';
 
 export async function GET(
@@ -17,6 +17,7 @@ export async function GET(
   }
 
   // 2. Validar acceso si el poll es privado
+  const redis = getRedis();
   if (!poll.isPublic) {
     const sessionToken = req.cookies.get('token')?.value;
     if (!sessionToken) {

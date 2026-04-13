@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { redis } from '@/lib/redis';
+import { getRedis } from '@/lib/redis';
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'No session' }, { status: 401 });
   }
 
+  const redis = getRedis();
   const name = await redis.get(`session:${token}`);
   if (!name) {
     return NextResponse.json({ error: 'Session expired' }, { status: 401 });
