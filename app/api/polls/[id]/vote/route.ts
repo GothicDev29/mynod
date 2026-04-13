@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 import { polls, options, votes } from "@/lib/schema";
 
 export async function POST(
@@ -30,6 +30,8 @@ export async function POST(
   if (!optionId || !sessionToken) {
     return NextResponse.json({ error: "optionId y sessionToken son requeridos" }, { status: 400 });
   }
+
+  const redis = getRedis();
 
   // 2. Validar que la opción existe y pertenece a este poll
   const [option] = await db

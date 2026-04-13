@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { getRedis } from '@/lib/redis';
 import { polls } from '@/lib/schema';
 
 export async function POST(
@@ -39,6 +39,7 @@ export async function POST(
 
   const sessionToken = req.cookies.get('token')?.value;
   if (sessionToken) {
+    const redis = getRedis();
     await redis.set(`pollAccess:${pollId}:${sessionToken}`, '1', 'EX', 86400);
   }
 
