@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { DM_Sans } from 'next/font/google';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { getRedis } from '@/lib/redis';
 import { polls, options } from '@/lib/schema';
 import PollVoter from './components/PollVoter';
 import PollResults from './components/PollResults';
@@ -39,6 +39,7 @@ export default async function PollPage(props: {
       redirect(`/poll/${id}/access`);
     }
 
+    const redis = getRedis();
     const hasAccess = await redis.get(`pollAccess:${id}:${sessionToken}`);
     if (!hasAccess) {
       redirect(`/poll/${id}/access`);
@@ -52,6 +53,7 @@ export default async function PollPage(props: {
     .where(eq(options.pollId, id));
 
   // 4. Obtener conteo de votos desde Redis para cada opción
+  const redis = getRedis();
   const optionsWithVotes = await Promise.all(
     pollOptions.map(async (option) => {
       const votesRaw = await redis.get(`votes:${id}:${option.id}`);
